@@ -1,9 +1,3 @@
-# Ignore all
-*
-
-# Unignore source code files
-!*.c
-!*.h
-
-!makefile
-!.gitignore
+.vscode
+*.o
+tetris
