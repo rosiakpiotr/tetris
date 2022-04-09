@@ -3,6 +3,7 @@
 
 #include "constants.h"
 #include "types.h"
+#include "utility.h"
 
 void drawBlock(int xCenter, int yCenter, int width, EColor color);
 void drawBoard(SGameModel model);

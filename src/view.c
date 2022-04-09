@@ -21,15 +21,11 @@ void drawBoard(SGameModel model)
         {
             unsigned char data = model.field[x][y];
             unsigned char is_axial = data & (1 << IS_AXIAL);
-            if (data)
-            {
-                int xerino = 5;
-            }
             drawBlock(
                 x * dx + 50,
                 FIELD_HEIGHT * dy - y * dy + 100,
                 BLOCK_DIMENSION,
-                is_axial ? RED : (data > 0 ? YELLOW : GREEN));
+                is_axial ? RED : (IS_BLOCK_MOVABLE(data) ? YELLOW : GREEN));
         }
     }
 }

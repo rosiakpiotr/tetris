@@ -40,12 +40,33 @@ void insertPiece(SGameModel *model, int pieceId, int rotAxisX, int rotAxisY, int
     {
         for (size_t y = 0; y < 4; y++)
         {
+            unsigned char block = 0;
+            unsigned char data = pieces[pieceId][rotStage][x][y];
+            if (data)
+            {
+                block |= (x == rotAxisX && y == rotAxisY) << IS_AXIAL;
+                SET_PIECE_ID(block, pieceId);
+            }
+
             int ix = (FIELD_WIDTH - 1) / 2 + x - rotAxisX;
             int iy = FIELD_HEIGHT - 1 - y;
-            unsigned char block = 0;
-            block |= (x == rotAxisX && y == rotAxisY) << IS_AXIAL;
-            block |= (pieces[pieceId][rotStage][x][y] << 4);
             model->field[ix][iy] = block;
+        }
+    }
+}
+
+void movePieceDown(SGameModel *model)
+{
+    for (size_t x = 1; x < FIELD_WIDTH; x++)
+    {
+        for (size_t y = 1; y < FIELD_HEIGHT; y++)
+        {
+            unsigned char block = model->field[x][y];
+            model->field[x][y] = 0;
+            if (IS_BLOCK_MOVABLE(block))
+            {
+                model->field[x][y - 1] = block;
+            }
         }
     }
 }

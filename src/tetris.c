@@ -27,6 +27,7 @@ int main()
     int x, y;
     findRotationAxisForPiece(pieces[pieceI][rotStage], &x, &y);
     insertPiece(&model, pieceI, x, y, rotStage);
+    printf("%d, rot: %d\n", pieceI, rotStage);
 
     int counter = 0;
     while (1)
@@ -38,6 +39,12 @@ int main()
         if (key == SDLK_SPACE)
         {
             rotatePiece();
+        }
+
+        if (counter++ == 30)
+        {
+            movePieceDown(&model);
+            counter = 0;
         }
 
         clearScreen();
