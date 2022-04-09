@@ -55,22 +55,6 @@ void insertPiece(SGameModel *model, int pieceId, int rotAxisX, int rotAxisY, int
     }
 }
 
-void movePieceDown(SGameModel *model)
-{
-    for (size_t x = 0; x < FIELD_WIDTH - 1; x++)
-    {
-        for (size_t y = 1; y < FIELD_HEIGHT; y++)
-        {
-            unsigned char block = model->field[x][y];
-            model->field[x][y] = 0;
-            if (IS_BLOCK_MOVABLE(block))
-            {
-                model->field[x][y - 1] = block;
-            }
-        }
-    }
-}
-
 void movePiece(SGameModel *model, EDirection dir)
 {
     if (dir == LEFT)
@@ -102,9 +86,24 @@ void movePiece(SGameModel *model, EDirection dir)
             }
         }
     }
+
+    else if (dir == DOWN)
+    {
+        for (int x = 0; x < FIELD_WIDTH; x++)
+        {
+            for (int y = 0; y < FIELD_HEIGHT - 1; y++)
+            {
+                if (IS_BLOCK_MOVABLE(model->field[x][y + 1]))
+                {
+                    model->field[x][y] = model->field[x][y + 1];
+                    model->field[x][y + 1] = 0;
+                }
+            }
+        }
+    }
 }
 
-char canMove(SGameModel *model, EDirection dir)
+char willCrossBoundaries(SGameModel *model, EDirection dir)
 {
     if (dir == LEFT)
     {
@@ -112,7 +111,7 @@ char canMove(SGameModel *model, EDirection dir)
         {
             if (IS_BLOCK_MOVABLE(model->field[0][y]))
             {
-                return FALSE;
+                return SIDE_TOUCH;
             }
         }
     }
@@ -123,10 +122,66 @@ char canMove(SGameModel *model, EDirection dir)
         {
             if (IS_BLOCK_MOVABLE(model->field[FIELD_WIDTH - 1][y]))
             {
-                return FALSE;
+                return SIDE_TOUCH;
             }
         }
     }
 
-    return TRUE;
+    else if (dir == DOWN)
+    {
+        for (size_t x = 0; x < FIELD_WIDTH; x++)
+        {
+            if (IS_BLOCK_MOVABLE(model->field[x][0]))
+            {
+                return GROUND_TOUCH;
+            }
+        }
+    }
+
+    return FALSE;
+}
+
+char collisionCheck(SGameModel *model, EDirection dir)
+{
+    int xoff = dir == LEFT ? 1 : dir == RIGHT ? -1
+                                              : 0;
+    int yoff = dir == DOWN;
+    for (size_t x = 1; x < FIELD_WIDTH - 1; x++)
+    {
+        for (size_t y = 1; y < FIELD_HEIGHT - 1; y++)
+        {
+            unsigned char data = model->field[x][y];
+            if (IS_BLOCK_MOVABLE(data))
+            {
+                unsigned char next = model->field[x][y - yoff];
+                if (next & (1 << COLLIDED))
+                {
+                    return GROUND_TOUCH;
+                }
+                next = model->field[x - xoff][y];
+                if (next & (1 << COLLIDED))
+                {
+                    return SIDE_TOUCH;
+                }
+            }
+        }
+    }
+
+    return FALSE;
+}
+
+void collidePiece(SGameModel *model)
+{
+    for (size_t x = 0; x < FIELD_WIDTH; x++)
+    {
+        for (size_t y = 0; y < FIELD_HEIGHT; y++)
+        {
+            unsigned char block = model->field[x][y];
+            if (IS_BLOCK_MOVABLE(block))
+            {
+                block |= (1 << COLLIDED);
+                model->field[x][y] = block;
+            }
+        }
+    }
 }

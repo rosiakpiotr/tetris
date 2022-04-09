@@ -19,13 +19,24 @@ void drawBoard(SGameModel model)
     {
         for (int y = 0; y < FIELD_HEIGHT; y++)
         {
-            unsigned char data = model.field[x][y];
-            unsigned char is_axial = data & (1 << IS_AXIAL);
+            unsigned char block = model.field[x][y];
+            unsigned char is_axial = block & (1 << IS_AXIAL);
+            unsigned char collided = block & (1 << COLLIDED);
+            EColor color = GREEN;
+            if (IS_BLOCK_MOVABLE(block))
+            {
+                color = YELLOW;
+                if (is_axial)
+                    color = RED;
+            }
+            else if (collided)
+                color = BLACK;
+
             drawBlock(
                 x * dx + 50,
                 FIELD_HEIGHT * dy - y * dy + 100,
                 BLOCK_DIMENSION,
-                is_axial ? RED : (IS_BLOCK_MOVABLE(data) ? YELLOW : GREEN));
+                color);
         }
     }
 }

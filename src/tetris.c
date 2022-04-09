@@ -30,32 +30,45 @@ int main()
     printf("%d, rot: %d\n", pieceI, rotStage);
 
     int counter = 0;
+    EDirection moveDir = -1;
     while (1)
     {
         int key = gfx_pollkey();
         if (key == '0')
             break;
 
-        if (key == SDLK_LEFT && canMove(&model, LEFT))
+        if (key == SDLK_LEFT)
         {
-            movePiece(&model, LEFT);
+            moveDir = LEFT;
         }
 
-        if (key == SDLK_RIGHT && canMove(&model, RIGHT))
+        else if (key == SDLK_RIGHT)
         {
-            movePiece(&model, RIGHT);
+            moveDir = RIGHT;
         }
 
-        if (key == SDLK_SPACE)
+        else if (key == SDLK_SPACE)
         {
             rotatePiece();
         }
 
-        if (counter++ == 30)
+        if (counter++ == 20)
         {
-            movePieceDown(&model);
+            moveDir = DOWN;
             counter = 0;
         }
+
+        char boundsCrossType = willCrossBoundaries(&model, moveDir);
+        char collisionType = collisionCheck(&model, moveDir);
+        if (boundsCrossType == GROUND_TOUCH || collisionType == GROUND_TOUCH)
+        {
+            collidePiece(&model);
+        }
+
+        if (boundsCrossType == FALSE && collisionType == FALSE)
+            movePiece(&model, moveDir);
+
+        moveDir = -1;
 
         clearScreen();
         drawBoard(model);

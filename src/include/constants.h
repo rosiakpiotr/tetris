@@ -11,7 +11,10 @@
 
 #define AXIS_OF_ROTATION 2
 
-/* Bitshifts */
+#define SIDE_TOUCH 1
+#define GROUND_TOUCH 2
+
+/* Block bitshifts */
 #define COLLIDED 0 // 0x01 -> 00000001
 #define PIECE_ID 1 // 0x0E -> 00001110
 #define ROT_STAG 4 // 0x70 -> 01110000
