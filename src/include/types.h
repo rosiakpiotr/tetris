@@ -14,6 +14,12 @@ typedef enum
     FOURTH
 } ERotationStage;
 
+typedef enum
+{
+    LEFT,
+    RIGHT
+} EDirection;
+
 typedef struct
 {
     unsigned char field[FIELD_WIDTH][FIELD_HEIGHT];

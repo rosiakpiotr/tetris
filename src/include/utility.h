@@ -7,4 +7,7 @@
 #define GET_PIECE_ID(BLOCK) (((n >> PIECE_ID) & ((1 << 3) - 1)) - 1)
 #define SET_PIECE_ID(BLOCK, ID) (BLOCK |= ((ID + 1) << PIECE_ID))
 
+#define FALSE 0
+#define TRUE 1
+
 #endif

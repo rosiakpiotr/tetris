@@ -36,6 +36,16 @@ int main()
         if (key == '0')
             break;
 
+        if (key == SDLK_LEFT && canMove(&model, LEFT))
+        {
+            movePiece(&model, LEFT);
+        }
+
+        if (key == SDLK_RIGHT && canMove(&model, RIGHT))
+        {
+            movePiece(&model, RIGHT);
+        }
+
         if (key == SDLK_SPACE)
         {
             rotatePiece();

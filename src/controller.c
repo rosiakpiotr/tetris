@@ -57,7 +57,7 @@ void insertPiece(SGameModel *model, int pieceId, int rotAxisX, int rotAxisY, int
 
 void movePieceDown(SGameModel *model)
 {
-    for (size_t x = 1; x < FIELD_WIDTH; x++)
+    for (size_t x = 0; x < FIELD_WIDTH - 1; x++)
     {
         for (size_t y = 1; y < FIELD_HEIGHT; y++)
         {
@@ -69,4 +69,64 @@ void movePieceDown(SGameModel *model)
             }
         }
     }
+}
+
+void movePiece(SGameModel *model, EDirection dir)
+{
+    if (dir == LEFT)
+    {
+        for (size_t x = 0; x < FIELD_WIDTH - 1; x++)
+        {
+            for (size_t y = 0; y < FIELD_HEIGHT; y++)
+            {
+                if (IS_BLOCK_MOVABLE(model->field[x + 1][y]))
+                {
+                    model->field[x][y] = model->field[x + 1][y];
+                    model->field[x + 1][y] = 0;
+                }
+            }
+        }
+    }
+
+    else if (dir == RIGHT)
+    {
+        for (size_t x = FIELD_WIDTH - 1; x > 0; x--)
+        {
+            for (size_t y = 0; y < FIELD_HEIGHT; y++)
+            {
+                if (IS_BLOCK_MOVABLE(model->field[x - 1][y]))
+                {
+                    model->field[x][y] = model->field[x - 1][y];
+                    model->field[x - 1][y] = 0;
+                }
+            }
+        }
+    }
+}
+
+char canMove(SGameModel *model, EDirection dir)
+{
+    if (dir == LEFT)
+    {
+        for (size_t y = 0; y < FIELD_HEIGHT; y++)
+        {
+            if (IS_BLOCK_MOVABLE(model->field[0][y]))
+            {
+                return FALSE;
+            }
+        }
+    }
+
+    else if (dir == RIGHT)
+    {
+        for (size_t y = 0; y < FIELD_HEIGHT; y++)
+        {
+            if (IS_BLOCK_MOVABLE(model->field[FIELD_WIDTH - 1][y]))
+            {
+                return FALSE;
+            }
+        }
+    }
+
+    return TRUE;
 }
