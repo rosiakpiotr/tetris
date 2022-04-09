@@ -3,7 +3,6 @@
 
 #include "types.h"
 #include "constants.h"
-#include "utility.h"
 #include "piece_definition.h"
 
 void resetGame(SGameModel *model);
