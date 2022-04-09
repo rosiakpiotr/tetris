@@ -1,7 +1,7 @@
 #ifndef PIECE_DEFINITION_H
 #define PIECE_DEFINITION_H
 
-char pieces[7 /*kind */][4 /* rotation */][4][4] =
+static const char pieces[7 /*kind */][4 /* rotation */][4][4] =
     {
         /* square */
         {
