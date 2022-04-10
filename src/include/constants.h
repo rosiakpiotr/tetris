@@ -18,6 +18,6 @@
 #define COLLIDED 0 // 0x01 -> 00000001
 #define PIECE_ID 1 // 0x0E -> 00001110
 #define ROT_STAG 4 // 0x70 -> 01110000
-#define IS_AXIAL 7 // 0x80 -> 10000000
+#define IS_RAXIS 7 // 0x80 -> 10000000
 
 #endif

@@ -34,21 +34,16 @@ void findRotationAxisForPiece(const char piece[4][4], int *retX, int *retY)
     }
 }
 
-void insertPiece(SGameModel *model, int pieceId, int rotAxisX, int rotAxisY, int rotStage)
+void insertNextPiece(SGameModel *model, int xOff)
 {
     for (size_t x = 0; x < 4; x++)
     {
         for (size_t y = 0; y < 4; y++)
         {
-            unsigned char block = 0;
-            unsigned char data = pieces[pieceId][rotStage][x][y];
-            if (data)
-            {
-                block |= (x == rotAxisX && y == rotAxisY) << IS_AXIAL;
-                SET_PIECE_ID(block, pieceId);
-            }
+            unsigned char block = model->next[x][y];
+            char axis = block & (1 << IS_RAXIS);
 
-            int ix = (FIELD_WIDTH - 1) / 2 + x - rotAxisX;
+            int ix = (FIELD_WIDTH - 1) / 2 + x - xOff;
             int iy = FIELD_HEIGHT - 1 - y;
             model->field[ix][iy] = block;
         }
@@ -182,6 +177,34 @@ void collidePiece(SGameModel *model)
                 block |= (1 << COLLIDED);
                 model->field[x][y] = block;
             }
+        }
+    }
+}
+
+void chooseNextPiece(SGameModel *model, int *computedXOffset)
+{
+    // Random int between 0 and 6
+    int id = rand() % 7;
+    int stage = rand() % 4;
+
+    int xax, yax;
+    findRotationAxisForPiece(pieces[id][stage], &xax, &yax);
+    *computedXOffset = xax;
+
+    for (size_t x = 0; x < 4; x++)
+    {
+        for (size_t y = 0; y < 4; y++)
+        {
+            unsigned char data = pieces[id][stage][x][y];
+            unsigned char block = 0;
+            if (data)
+            {
+                block |= (x == xax && y == yax) << IS_RAXIS;
+                // Extract only first 3 bits
+                block |= (stage & 0x3) << ROT_STAG;
+                SET_PIECE_ID(block, id);
+            }
+            model->next[x][y] = block;
         }
     }
 }

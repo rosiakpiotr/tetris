@@ -20,7 +20,7 @@ void drawBoard(SGameModel model)
         for (int y = 0; y < FIELD_HEIGHT; y++)
         {
             unsigned char block = model.field[x][y];
-            unsigned char is_axial = block & (1 << IS_AXIAL);
+            unsigned char is_axial = block & (1 << IS_RAXIS);
             unsigned char collided = block & (1 << COLLIDED);
             EColor color = GREEN;
             if (IS_BLOCK_MOVABLE(block))

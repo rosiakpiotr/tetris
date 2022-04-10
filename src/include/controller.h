@@ -1,6 +1,9 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
+#include <stdio.h>
+#include <time.h>
+
 #include "types.h"
 #include "constants.h"
 #include "piece_definition.h"
@@ -14,5 +17,8 @@ void movePiece(SGameModel *model, EDirection dir);
 char willCrossBoundaries(SGameModel *model, EDirection dir);
 char collisionCheck(SGameModel *model, EDirection dir);
 void collidePiece(SGameModel *model);
+
+void chooseNextPiece(SGameModel *model, int *computedXOffset);
+void insertNextPiece(SGameModel *model, int xoffset);
 
 #endif

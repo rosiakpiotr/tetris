@@ -1,11 +1,10 @@
+#include <time.h>
+
 #include "include/primlib.h"
 #include "include/types.h"
 #include "include/controller.h"
 #include "include/view.h"
 #include "include/piece_definition.h"
-
-#include <time.h>
-#include <stdlib.h>
 
 int main()
 {
@@ -19,23 +18,24 @@ int main()
 
     SGameModel model;
     resetGame(&model);
-
-    // Random int between 0 and 6
-    int pieceI = rand() % 7;
-    int rotStage = rand() % 4;
-
-    int x, y;
-    findRotationAxisForPiece(pieces[pieceI][rotStage], &x, &y);
-    insertPiece(&model, pieceI, x, y, rotStage);
-    printf("%d, rot: %d\n", pieceI, rotStage);
+    int xoffset;
+    chooseNextPiece(&model, &xoffset);
 
     int counter = 0;
     EDirection moveDir = -1;
+    char hasPiece = FALSE;
     while (1)
     {
         int key = gfx_pollkey();
         if (key == '0')
             break;
+
+        if (!hasPiece)
+        {
+            insertNextPiece(&model, xoffset);
+            chooseNextPiece(&model, &xoffset);
+            hasPiece = TRUE;
+        }
 
         if (key == SDLK_LEFT)
         {
@@ -47,7 +47,18 @@ int main()
             moveDir = RIGHT;
         }
 
-        else if (key == SDLK_SPACE)
+        else if (key == SDLK_DOWN)
+        {
+            while (willCrossBoundaries(&model, DOWN) != GROUND_TOUCH &&
+                   collisionCheck(&model, DOWN) != GROUND_TOUCH)
+            {
+                movePiece(&model, DOWN);
+            }
+            collidePiece(&model);
+            hasPiece = FALSE;
+        }
+
+        if (key == SDLK_SPACE)
         {
             rotatePiece();
         }
@@ -63,6 +74,7 @@ int main()
         if (boundsCrossType == GROUND_TOUCH || collisionType == GROUND_TOUCH)
         {
             collidePiece(&model);
+            hasPiece = FALSE;
         }
 
         if (boundsCrossType == FALSE && collisionType == FALSE)

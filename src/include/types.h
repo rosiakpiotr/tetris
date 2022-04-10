@@ -24,6 +24,7 @@ typedef enum
 typedef struct
 {
     unsigned char field[FIELD_WIDTH][FIELD_HEIGHT];
+    unsigned char next[4][4];
 } SGameModel;
 
 #endif
