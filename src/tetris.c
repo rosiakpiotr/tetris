@@ -17,37 +17,47 @@ int main()
     srand(time(NULL));
 
     SGameModel model;
-    resetGame(&model);
     int xoffset;
+    resetGame(&model);
     chooseNextPiece(&model, &xoffset);
 
     int counter = 0;
     EDirection moveDir = -1;
     char hasPiece = FALSE;
+    char gameOver = FALSE;
     while (1)
     {
         int key = gfx_pollkey();
-        if (key == '0')
-            break;
 
-        if (!hasPiece)
+        clearRows(&model);
+
+        if (!hasPiece && !gameOver)
         {
-            insertNextPiece(&model, xoffset);
-            chooseNextPiece(&model, &xoffset);
-            hasPiece = TRUE;
+            char collided = insertNextPiece(&model, xoffset);
+            if (collided)
+            {
+                collidePiece(&model);
+                gameOver = TRUE;
+                hasPiece = FALSE;
+            }
+            else
+            {
+                chooseNextPiece(&model, &xoffset);
+                hasPiece = TRUE;
+            }
         }
 
-        if (key == SDLK_LEFT)
+        if (hasPiece && key == SDLK_LEFT)
         {
             moveDir = LEFT;
         }
 
-        else if (key == SDLK_RIGHT)
+        else if (hasPiece && key == SDLK_RIGHT)
         {
             moveDir = RIGHT;
         }
 
-        else if (key == SDLK_DOWN)
+        else if (hasPiece && key == SDLK_DOWN)
         {
             while (willCrossBoundaries(&model, DOWN) != GROUND_TOUCH &&
                    collisionCheck(&model, DOWN) != GROUND_TOUCH)

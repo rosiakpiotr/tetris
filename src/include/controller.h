@@ -19,6 +19,8 @@ char collisionCheck(SGameModel *model, EDirection dir);
 void collidePiece(SGameModel *model);
 
 void chooseNextPiece(SGameModel *model, int *computedXOffset);
-void insertNextPiece(SGameModel *model, int xoffset);
+char insertNextPiece(SGameModel *model, int xoffset);
+
+void clearRows(SGameModel *model);
 
 #endif

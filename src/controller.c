@@ -34,20 +34,26 @@ void findRotationAxisForPiece(const char piece[4][4], int *retX, int *retY)
     }
 }
 
-void insertNextPiece(SGameModel *model, int xOff)
+char insertNextPiece(SGameModel *model, int xOff)
 {
+    char collWithExist = FALSE;
     for (size_t x = 0; x < 4; x++)
     {
         for (size_t y = 0; y < 4; y++)
         {
             unsigned char block = model->next[x][y];
-            char axis = block & (1 << IS_RAXIS);
-
             int ix = (FIELD_WIDTH - 1) / 2 + x - xOff;
             int iy = FIELD_HEIGHT - 1 - y;
-            model->field[ix][iy] = block;
+            if (model->field[ix][iy] & (1 << COLLIDED))
+            {
+                collWithExist = TRUE;
+            }
+            // Insert only non-zero blocks
+            if (block)
+                model->field[ix][iy] = block;
         }
     }
+    return collWithExist;
 }
 
 void movePiece(SGameModel *model, EDirection dir)
@@ -184,7 +190,7 @@ void collidePiece(SGameModel *model)
 void chooseNextPiece(SGameModel *model, int *computedXOffset)
 {
     // Random int between 0 and 6
-    int id = rand() % 7;
+    int id = 0; // rand() % 7;
     int stage = rand() % 4;
 
     int xax, yax;
@@ -205,6 +211,26 @@ void chooseNextPiece(SGameModel *model, int *computedXOffset)
                 SET_PIECE_ID(block, id);
             }
             model->next[x][y] = block;
+        }
+    }
+}
+
+void clearRows(SGameModel *model)
+{
+    for (size_t y = 0; y < FIELD_HEIGHT; y++)
+    {
+        char rowCollided = TRUE;
+        for (size_t x = 0; x < FIELD_WIDTH; x++)
+        {
+            unsigned char block = model->field[x][y];
+            if (!(block & (1 << COLLIDED)))
+                rowCollided = FALSE;
+        }
+
+        if (rowCollided)
+        {
+            for (size_t x = 0; x < FIELD_WIDTH; x++)
+                model->field[x][y] = 0;
         }
     }
 }
