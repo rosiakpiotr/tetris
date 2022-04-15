@@ -13,28 +13,28 @@ void drawBlock(int xCenter, int yCenter, int width, EColor color)
 
 void drawBoard(SGameModel model)
 {
-    int dx = (BLOCK_DIMENSION + 5);
-    int dy = (BLOCK_DIMENSION + 5);
+    unsigned char block;
+    EColor color;
+    int dx = (BLOCK_DIMENSION + BLOCK_SPACING);
+    int dy = (BLOCK_DIMENSION + BLOCK_SPACING);
     for (int x = 0; x < FIELD_WIDTH; x++)
     {
         for (int y = 0; y < FIELD_HEIGHT; y++)
         {
-            unsigned char block = model.field[x][y];
-            unsigned char is_axial = block & (1 << IS_RAXIS);
-            unsigned char collided = block & (1 << COLLIDED);
-            EColor color = GREEN;
-            if (IS_BLOCK_MOVABLE(block))
+            block = model.field[x][y];
+            color = GREEN;
+            if (IS_BMOVABLE(block))
             {
                 color = YELLOW;
-                if (is_axial)
+                if (IS_ROT_AXIS(block))
                     color = RED;
             }
-            else if (collided)
+            else if (block != EMPTY_BLOCK)
                 color = BLACK;
 
             drawBlock(
                 x * dx + 50,
-                FIELD_HEIGHT * dy - y * dy + 100,
+                y * dy + 100,
                 BLOCK_DIMENSION,
                 color);
         }

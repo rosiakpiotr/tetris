@@ -7,19 +7,21 @@
 #include "types.h"
 #include "constants.h"
 #include "piece_definition.h"
-#include "utility.h"
 
 void resetGame(SGameModel *model);
-void rotatePiece();
-void findRotationAxisForPiece(const char piece[4][4], int *retX, int *retY);
-void insertPiece(SGameModel *model, int pieceId, int rotAxisX, int rotAxisY, int rotStage);
+void rotatePiece(SGameModel *model);
 void movePiece(SGameModel *model, EDirection dir);
 char willCrossBoundaries(SGameModel *model, EDirection dir);
 char collisionCheck(SGameModel *model, EDirection dir);
 void collidePiece(SGameModel *model);
 
-void chooseNextPiece(SGameModel *model, int *computedXOffset);
-char insertNextPiece(SGameModel *model, int xoffset);
+void prepareRandomNext(SGameModel *model);
+void prepareNext(SGameModel *model, int id, int rotation);
+
+// Inserts next piece until detects collision with field bounds or other blocks.
+// Returns TRUE on successfull insertion (all non zero blocks from next piece are inserted)
+// Returns FALSE if piece was about to cover different non zero block or violate game array boundaries.
+char insertNext(SGameModel *model, int xoffset, int yoffset);
 
 void clearRows(SGameModel *model);
 

@@ -17,9 +17,8 @@ int main()
     srand(time(NULL));
 
     SGameModel model;
-    int xoffset;
     resetGame(&model);
-    chooseNextPiece(&model, &xoffset);
+    prepareRandomNext(&model);
 
     int counter = 0;
     EDirection moveDir = -1;
@@ -33,7 +32,7 @@ int main()
 
         if (!hasPiece && !gameOver)
         {
-            char collided = insertNextPiece(&model, xoffset);
+            char collided = insertNext(&model, FIELD_WIDTH / 2 - 1 - model.nextLocalAxisX, 0);
             if (collided)
             {
                 collidePiece(&model);
@@ -42,7 +41,7 @@ int main()
             }
             else
             {
-                chooseNextPiece(&model, &xoffset);
+                prepareRandomNext(&model);
                 hasPiece = TRUE;
             }
         }
@@ -70,7 +69,7 @@ int main()
 
         if (key == SDLK_SPACE)
         {
-            rotatePiece();
+            rotatePiece(&model);
         }
 
         if (counter++ == 20)

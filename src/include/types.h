@@ -18,13 +18,16 @@ typedef enum
 {
     LEFT,
     RIGHT,
-    DOWN
+    DOWN,
+    UP
 } EDirection;
 
 typedef struct
 {
     unsigned char field[FIELD_WIDTH][FIELD_HEIGHT];
-    unsigned char next[4][4];
+    unsigned char next[PIECE_SIZE][PIECE_SIZE];
+    size_t nextLocalAxisX;
+    size_t nextLocalAxisY;
 } SGameModel;
 
 #endif
