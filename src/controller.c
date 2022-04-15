@@ -60,7 +60,6 @@ void rotatePiece(SGameModel *model)
 char insertNext(SGameModel *model, int xoffset, int yoffset)
 {
     unsigned char block;
-    unsigned char data;
     int fieldX;
     int fieldY;
     for (size_t x = 0; x < PIECE_SIZE; x++)
@@ -72,10 +71,7 @@ char insertNext(SGameModel *model, int xoffset, int yoffset)
                 continue;
             fieldX = x + xoffset;
             fieldY = y + yoffset;
-            if (!X_INDEX_IN_RANGE(fieldX) || !Y_INDEX_IN_RANGE(fieldY))
-                return FALSE;
-            data = model->field[fieldX][fieldY];
-            if (data != EMPTY_BLOCK)
+            if (!X_INDEX_IN_RANGE(fieldX) || !Y_INDEX_IN_RANGE(fieldY) || model->field[fieldX][fieldY] != EMPTY_BLOCK)
                 return FALSE;
             model->field[fieldX][fieldY] = block;
         }
