@@ -43,8 +43,9 @@
 #define IS_ROT_AXIS(BLOCK) (BLOCK & (1 << IS_RAXIS))
 #define SET_IS_AXIS(BLOCK, FLAG) (BLOCK |= (((FLAG)&0x01) << IS_RAXIS))
 
-#define X_INDEX_IN_RANGE(INDEX) ((INDEX) >= 0 && (INDEX) < FIELD_WIDTH)
-#define Y_INDEX_IN_RANGE(INDEX) ((INDEX) >= 0 && (INDEX) < FIELD_HEIGHT)
+#define X_INDEX_IN_RANGE(INDEX) ((((INDEX) >= 0) && ((INDEX) < FIELD_WIDTH)))
+#define Y_INDEX_IN_RANGE(INDEX) ((((INDEX) >= 0) && ((INDEX) < FIELD_HEIGHT)))
+#define INDEXES_IN_RANGE(X, Y) (X_INDEX_IN_RANGE((X)) && Y_INDEX_IN_RANGE((Y)))
 
 #define TRUE 1
 #define FALSE 0

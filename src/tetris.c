@@ -21,7 +21,6 @@ int main()
     prepareRandomNext(&model);
 
     int counter = 0;
-    EDirection moveDir = -1;
     char hasPiece = FALSE;
     char gameOver = FALSE;
     while (1)
@@ -32,8 +31,8 @@ int main()
 
         if (!hasPiece && !gameOver)
         {
-            char collided = insertNext(&model, FIELD_WIDTH / 2 - 1 - model.nextLocalAxisX, 0);
-            if (collided)
+            char success = insertNext(&model, FIELD_WIDTH / 2 - 1 - model.nextLocalAxisX, 0);
+            if (!success)
             {
                 collidePiece(&model);
                 gameOver = TRUE;
@@ -48,23 +47,16 @@ int main()
 
         if (hasPiece && key == SDLK_LEFT)
         {
-            moveDir = LEFT;
+            moveCurrent(&model, LEFT);
         }
 
         else if (hasPiece && key == SDLK_RIGHT)
         {
-            moveDir = RIGHT;
+            moveCurrent(&model, RIGHT);
         }
 
         else if (hasPiece && key == SDLK_DOWN)
         {
-            while (willCrossBoundaries(&model, DOWN) != GROUND_TOUCH &&
-                   collisionCheck(&model, DOWN) != GROUND_TOUCH)
-            {
-                movePiece(&model, DOWN);
-            }
-            collidePiece(&model);
-            hasPiece = FALSE;
         }
 
         if (key == SDLK_SPACE)
@@ -74,27 +66,15 @@ int main()
 
         if (counter++ == 20)
         {
-            moveDir = DOWN;
+            moveCurrent(&model, DOWN);
             counter = 0;
         }
-
-        char boundsCrossType = willCrossBoundaries(&model, moveDir);
-        char collisionType = collisionCheck(&model, moveDir);
-        if (boundsCrossType == GROUND_TOUCH || collisionType == GROUND_TOUCH)
-        {
-            collidePiece(&model);
-            hasPiece = FALSE;
-        }
-
-        if (boundsCrossType == FALSE && collisionType == FALSE)
-            movePiece(&model, moveDir);
-
-        moveDir = -1;
 
         clearScreen();
         drawBoard(model);
         gfx_updateScreen();
         SDL_Delay(FRAMERATE_DELAY);
     }
+
     return 0;
 }

@@ -17,9 +17,10 @@ void drawBoard(SGameModel model)
     EColor color;
     int dx = (BLOCK_DIMENSION + BLOCK_SPACING);
     int dy = (BLOCK_DIMENSION + BLOCK_SPACING);
-    for (int x = 0; x < FIELD_WIDTH; x++)
+
+    for (size_t y = 0; y < FIELD_HEIGHT; y++)
     {
-        for (int y = 0; y < FIELD_HEIGHT; y++)
+        for (size_t x = 0; x < FIELD_WIDTH; x++)
         {
             block = model.field[x][y];
             color = GREEN;

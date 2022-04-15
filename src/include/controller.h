@@ -8,11 +8,16 @@
 #include "constants.h"
 #include "piece_definition.h"
 
+void backupNext(SGameModel *model);
+void restoreNext(SGameModel *model);
+void backupField(SGameModel *model);
+void restoreField(SGameModel *model);
+
 void resetGame(SGameModel *model);
 void rotatePiece(SGameModel *model);
-void movePiece(SGameModel *model, EDirection dir);
-char willCrossBoundaries(SGameModel *model, EDirection dir);
-char collisionCheck(SGameModel *model, EDirection dir);
+char moveCurrent(SGameModel *model, EDirection dir);
+void findCurrentAxisInField(SGameModel *model, int *xIndex, int *yIndex);
+void eraseCurrentPieceStartingAt(SGameModel *model, int xIndex, int yIndex);
 void collidePiece(SGameModel *model);
 
 void prepareRandomNext(SGameModel *model);

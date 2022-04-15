@@ -18,8 +18,7 @@ typedef enum
 {
     LEFT,
     RIGHT,
-    DOWN,
-    UP
+    DOWN
 } EDirection;
 
 typedef struct

@@ -1,10 +1,30 @@
 #include "include/controller.h"
 
+unsigned char nextBackup[PIECE_SIZE][PIECE_SIZE];
+unsigned char fieldBackup[FIELD_WIDTH][FIELD_HEIGHT];
+
+void backupNext(SGameModel *model)
+{
+    memcpy(nextBackup, model->next, sizeof(model->next));
+}
+void restoreNext(SGameModel *model)
+{
+    memcpy(model->next, nextBackup, sizeof(nextBackup));
+}
+void backupField(SGameModel *model)
+{
+    memcpy(fieldBackup, model->field, sizeof(model->field));
+}
+void restoreField(SGameModel *model)
+{
+    memcpy(model->field, fieldBackup, sizeof(fieldBackup));
+}
+
 void resetGame(SGameModel *model)
 {
-    for (int x = 0; x < FIELD_WIDTH; x++)
+    for (size_t y = 0; y < FIELD_HEIGHT; y++)
     {
-        for (int y = 0; y < FIELD_HEIGHT; y++)
+        for (size_t x = 0; x < FIELD_WIDTH; x++)
         {
             model->field[x][y] = 0;
         }
@@ -62,16 +82,16 @@ char insertNext(SGameModel *model, int xoffset, int yoffset)
     unsigned char block;
     int fieldX;
     int fieldY;
-    for (size_t x = 0; x < PIECE_SIZE; x++)
+    for (size_t y = 0; y < PIECE_SIZE; y++)
     {
-        for (size_t y = 0; y < PIECE_SIZE; y++)
+        for (size_t x = 0; x < PIECE_SIZE; x++)
         {
             block = model->next[x][y];
             if (!block)
                 continue;
             fieldX = x + xoffset;
             fieldY = y + yoffset;
-            if (!X_INDEX_IN_RANGE(fieldX) || !Y_INDEX_IN_RANGE(fieldY) || model->field[fieldX][fieldY] != EMPTY_BLOCK)
+            if (!INDEXES_IN_RANGE(fieldX, fieldY) || model->field[fieldX][fieldY] != EMPTY_BLOCK)
                 return FALSE;
             model->field[fieldX][fieldY] = block;
         }
@@ -80,119 +100,69 @@ char insertNext(SGameModel *model, int xoffset, int yoffset)
     return TRUE;
 }
 
-void movePiece(SGameModel *model, EDirection dir)
+void findCurrentAxisInField(SGameModel *model, int *xIndex, int *yIndex)
 {
-    if (dir == LEFT)
-    {
-        for (size_t x = 0; x < FIELD_WIDTH - 1; x++)
-        {
-            for (size_t y = 0; y < FIELD_HEIGHT; y++)
-            {
-                if (IS_BMOVABLE(model->field[x + 1][y]))
-                {
-                    model->field[x][y] = model->field[x + 1][y];
-                    model->field[x + 1][y] = 0;
-                }
-            }
-        }
-    }
-
-    else if (dir == RIGHT)
-    {
-        for (size_t x = FIELD_WIDTH - 1; x > 0; x--)
-        {
-            for (size_t y = 0; y < FIELD_HEIGHT; y++)
-            {
-                if (IS_BMOVABLE(model->field[x - 1][y]))
-                {
-                    model->field[x][y] = model->field[x - 1][y];
-                    model->field[x - 1][y] = 0;
-                }
-            }
-        }
-    }
-
-    else if (dir == DOWN)
-    {
-        for (int x = 0; x < FIELD_WIDTH; x++)
-        {
-            for (int y = 0; y < FIELD_HEIGHT - 1; y++)
-            {
-                if (IS_BMOVABLE(model->field[x][y + 1]))
-                {
-                    model->field[x][y] = model->field[x][y + 1];
-                    model->field[x][y + 1] = 0;
-                }
-            }
-        }
-    }
-}
-
-char willCrossBoundaries(SGameModel *model, EDirection dir)
-{
-    if (dir == LEFT)
-    {
-        for (size_t y = 0; y < FIELD_HEIGHT; y++)
-        {
-            if (IS_BMOVABLE(model->field[0][y]))
-            {
-                return SIDE_TOUCH;
-            }
-        }
-    }
-
-    else if (dir == RIGHT)
-    {
-        for (size_t y = 0; y < FIELD_HEIGHT; y++)
-        {
-            if (IS_BMOVABLE(model->field[FIELD_WIDTH - 1][y]))
-            {
-                return SIDE_TOUCH;
-            }
-        }
-    }
-
-    else if (dir == DOWN)
+    for (size_t y = 0; y < FIELD_HEIGHT; y++)
     {
         for (size_t x = 0; x < FIELD_WIDTH; x++)
         {
-            if (IS_BMOVABLE(model->field[x][0]))
+            if (IS_ROT_AXIS(model->field[x][y]))
             {
-                return GROUND_TOUCH;
+                *xIndex = x;
+                *yIndex = y;
+                return;
             }
         }
     }
-
-    return FALSE;
 }
 
-char collisionCheck(SGameModel *model, EDirection dir)
+void eraseCurrentPieceStartingAt(SGameModel *model, int xIndex, int yIndex)
 {
-    /*int xoff = dir == LEFT ? 1 : dir == RIGHT ? -1
-                                              : 0;
-    int yoff = dir == DOWN;
-    for (size_t x = 1; x < FIELD_WIDTH - 1; x++)
+    for (size_t y = 0; y < PIECE_SIZE; y++)
     {
-        for (size_t y = 1; y < FIELD_HEIGHT - 1; y++)
+        for (size_t x = 0; x < PIECE_SIZE; x++)
         {
-            unsigned char data = model->field[x][y];
-            if (IS_BMOVABLE(data))
+            if (INDEXES_IN_RANGE(xIndex + x, yIndex + y) &&
+                IS_BMOVABLE(model->field[xIndex + x][yIndex + y]))
             {
-                unsigned char next = model->field[x][y - yoff];
-                if (next & (1 << COLLIDED))
-                {
-                    return GROUND_TOUCH;
-                }
-                next = model->field[x - xoff][y];
-                if (next & (1 << COLLIDED))
-                {
-                    return SIDE_TOUCH;
-                }
+                model->field[xIndex + x][yIndex + y] = 0;
             }
         }
-    }*/
+    }
+}
 
-    return FALSE;
+char moveCurrent(SGameModel *model, EDirection dir)
+{
+    char success;
+    int rotCentX;
+    int rotCentY;
+    int xoffset = dir == LEFT ? -1 : dir == RIGHT ? 1
+                                                  : 0;
+    int yoffset = dir == DOWN ? 1 : 0;
+
+    backupNext(model);
+    backupField(model);
+
+    findCurrentAxisInField(
+        model,
+        &rotCentX,
+        &rotCentY);
+    eraseCurrentPieceStartingAt(
+        model,
+        rotCentX - model->nextLocalAxisX,
+        rotCentY - model->nextLocalAxisY);
+    prepareNext(
+        model,
+        GET_PIECE_ID(model->field[rotCentX][rotCentY]),
+        GET_ROTATION(model->field[rotCentX][rotCentY]));
+    success = insertNext(
+        model,
+        rotCentX - model->nextLocalAxisX + xoffset,
+        rotCentY - model->nextLocalAxisY + yoffset);
+    if (!success)
+        restoreField(model);
+    restoreNext(model);
+    return success;
 }
 
 void collidePiece(SGameModel *model)
@@ -215,11 +185,11 @@ void prepareNext(SGameModel *model, int id, int rotation)
 {
     unsigned char data;
     unsigned char block;
-    for (size_t x = 0; x < PIECE_SIZE; x++)
+    for (size_t y = 0; y < PIECE_SIZE; y++)
     {
-        for (size_t y = 0; y < PIECE_SIZE; y++)
+        for (size_t x = 0; x < PIECE_SIZE; x++)
         {
-            data = pieces[id][rotation][x][y];
+            data = pieces[id][rotation][y][x];
             block = 0;
             SET_MOVABLE(block, TRUE);
             SET_PIECE_ID(block, id);
