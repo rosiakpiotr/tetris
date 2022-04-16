@@ -93,6 +93,11 @@ void drawNext(SGameModel model)
     }
 }
 
+void drawFinalText()
+{
+    gfx_textout(gfx_screenWidth() / 2, gfx_screenHeight() / 2, FINAL_TEXT, YELLOW);
+}
+
 void clearScreen()
 {
     gfx_filledRect(0, 0, gfx_screenWidth() - 1, gfx_screenHeight() - 1, BLACK);

@@ -21,41 +21,64 @@ int main()
 
     int counter = 0;
     char inserted = forwardPieces(&model);
+    EGameState state;
     while (1)
     {
         int key = gfx_pollkey();
-
-        if (key == SDLK_LEFT)
-            attemptMoveCurrent(&model, LEFT);
-
-        else if (key == SDLK_RIGHT)
-            attemptMoveCurrent(&model, RIGHT);
-
-        else if (key == SDLK_DOWN)
-            while ((inserted = attemptMoveCurrent(&model, DOWN)) == TRUE)
-                ;
-
-        if (key == SDLK_SPACE)
-            attemptRotateCurrent(&model);
-
-        if (counter++ == 20)
+        if (state == GOING)
         {
-            clearRows(&model);
-            inserted = attemptMoveCurrent(&model, DOWN);
-            counter = 0;
-        }
+            if (key == SDLK_LEFT)
+                attemptMoveCurrent(&model, LEFT);
 
-        if (!inserted)
-        {
-            immobiliseCurrent(&model);
-            inserted = forwardPieces(&model);
+            else if (key == SDLK_RIGHT)
+                attemptMoveCurrent(&model, RIGHT);
+
+            else if (key == SDLK_DOWN)
+                while ((inserted = attemptMoveCurrent(&model, DOWN)) == TRUE)
+                    ;
+
+            if (key == SDLK_SPACE)
+                attemptRotateCurrent(&model);
+
+            if (counter++ == MOVE_DOWN_EVERY_N_FRAMES)
+            {
+                clearRows(&model);
+                inserted = attemptMoveCurrent(&model, DOWN);
+                counter = 0;
+            }
+
             if (!inserted)
+            {
+                immobiliseCurrent(&model);
+                inserted = forwardPieces(&model);
+                if (!inserted)
+                    state = OVER;
+            }
+        }
+        else if (state == OVER)
+        {
+            if (key == SDLK_RETURN)
+            {
+                resetGame(&model);
+                inserted = forwardPieces(&model);
+                state = GOING;
+            }
+            else if (key == SDLK_ESCAPE)
+            {
                 break;
+            }
         }
 
         clearScreen();
-        drawGame(model);
-        drawBoard(model);
+        if (state == GOING)
+        {
+            drawGame(model);
+            drawBoard(model);
+        }
+        else if (state == OVER)
+        {
+            drawFinalText();
+        }
         gfx_updateScreen();
         SDL_Delay(FRAMERATE_DELAY);
     }

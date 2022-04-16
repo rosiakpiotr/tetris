@@ -11,6 +11,8 @@ void drawBoard(SGameModel model);
 void drawPegs();
 void drawNext(SGameModel model);
 
+void drawFinalText();
+
 void clearScreen();
 
 #endif

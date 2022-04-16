@@ -14,6 +14,12 @@ typedef enum
     DOWN
 } EDirection;
 
+typedef enum
+{
+    GOING,
+    OVER
+} EGameState;
+
 typedef struct
 {
     int localAxisX;

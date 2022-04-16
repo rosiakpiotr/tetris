@@ -8,6 +8,8 @@
 #define FIELD_HEIGHT 20
 #define BLOCK_DIMENSION 30
 #define BLOCK_SPACING 1
+#define MOVE_DOWN_EVERY_N_FRAMES 20
+#define FINAL_TEXT "Try again"
 
 #define PEG_HEIGHT (FIELD_HEIGHT * (BLOCK_DIMENSION + BLOCK_SPACING))
 #define SCREEN_CENTER_X (gfx_screenWidth() / 2.f)
