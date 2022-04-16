@@ -22,7 +22,7 @@ int main()
     insertNext(&model, FIELD_WIDTH / 2 - 1 - model.next.localAxisX, 0);
 
     int counter = 0;
-    char success;
+    char movePerfomed = TRUE;
     while (1)
     {
         int key = gfx_pollkey();
@@ -39,6 +39,8 @@ int main()
 
         else if (key == SDLK_DOWN)
         {
+            while ((movePerfomed = attemptMoveCurrent(&model, DOWN)) != FALSE)
+                ;
         }
 
         if (key == SDLK_SPACE)
@@ -48,16 +50,17 @@ int main()
 
         if (counter++ == 20)
         {
-            success = attemptMoveCurrent(&model, DOWN);
-            if (!success)
-            {
-                immobiliseCurrent(&model);
-                prepareRandomNext(&model);
-                success = insertNext(&model, FIELD_WIDTH / 2 - 1 - model.next.localAxisX, 0);
-                if (!success)
-                    break;
-            }
+            movePerfomed = attemptMoveCurrent(&model, DOWN);
             counter = 0;
+        }
+
+        if (!movePerfomed)
+        {
+            immobiliseCurrent(&model);
+            prepareRandomNext(&model);
+            movePerfomed = insertNext(&model, FIELD_WIDTH / 2 - 1 - model.next.localAxisX, 0);
+            if (!movePerfomed)
+                break;
         }
 
         clearScreen();
