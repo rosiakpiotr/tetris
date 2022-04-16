@@ -152,4 +152,23 @@ void prepareRandomNext(SGameModel *model)
 
 void clearRows(SGameModel *model)
 {
+    char rowCollided;
+    for (size_t y = 0; y < FIELD_HEIGHT; y++)
+    {
+        rowCollided = TRUE;
+        for (size_t x = 0; x < FIELD_WIDTH; x++)
+        {
+            if (!IS_PRESENT(model->field[x][y]) || IS_BMOVABLE(model->field[x][y]))
+            {
+                rowCollided = FALSE;
+            }
+        }
+        if (rowCollided)
+        {
+            for (size_t x = 0; x < FIELD_WIDTH; x++)
+            {
+                model->field[x][y] = EMPTY_BLOCK;
+            }
+        }
+    }
 }

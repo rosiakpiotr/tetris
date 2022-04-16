@@ -50,6 +50,8 @@ int main()
 
         if (counter++ == 20)
         {
+            if (movePerfomed)
+                clearRows(&model);
             movePerfomed = attemptMoveCurrent(&model, DOWN);
             counter = 0;
         }

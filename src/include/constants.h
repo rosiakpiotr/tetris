@@ -24,9 +24,11 @@
 /*******************************************/
 /* INTERNALS ----------------------------- */
 /* --------------------------------------- */
-#define SIDE_TOUCH 1
-#define GROUND_TOUCH 2
-#define TOP_TOUCH 3
+#define TRUE 1
+#define FALSE 0
+
+#define EMPTY_BLOCK 0x00
+#define INVALID -1
 
 /* Block bitshifts */
 #define BMOVABLE 0 // 00000001 -> 1 bit
@@ -45,16 +47,11 @@
 #define IS_ROT_AXIS(BLOCK) (BLOCK & (1 << IS_RAXIS))
 #define SET_IS_AXIS(BLOCK) (BLOCK |= (1 << IS_RAXIS))
 #define SET_PRESENT(BLOCK) (BLOCK |= (1 << PRESENCE))
+#define IS_PRESENT(BLOCK) ((BLOCK) != EMPTY_BLOCK)
 
 #define X_INDEX_IN_RANGE(INDEX) ((((INDEX) >= 0) && ((INDEX) < FIELD_WIDTH)))
 #define Y_INDEX_IN_RANGE(INDEX) ((((INDEX) >= 0) && ((INDEX) < FIELD_HEIGHT)))
 #define INDEXES_IN_RANGE(X, Y) (X_INDEX_IN_RANGE((X)) && Y_INDEX_IN_RANGE((Y)))
-
-#define TRUE 1
-#define FALSE 0
-
-#define EMPTY_BLOCK 0x00
-#define INVALID -1
 /*******************************************/
 
 #endif
