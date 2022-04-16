@@ -5,14 +5,7 @@
 #include "constants.h"
 
 typedef enum color EColor;
-
-typedef enum
-{
-    FIRST,
-    SECOND,
-    THIRD,
-    FOURTH
-} ERotationStage;
+typedef unsigned char TGameField[FIELD_WIDTH][FIELD_HEIGHT];
 
 typedef enum
 {
@@ -23,10 +16,15 @@ typedef enum
 
 typedef struct
 {
-    unsigned char field[FIELD_WIDTH][FIELD_HEIGHT];
-    unsigned char next[PIECE_SIZE][PIECE_SIZE];
-    size_t nextLocalAxisX;
-    size_t nextLocalAxisY;
+    int localAxisX;
+    int localAxisY;
+    unsigned char data[PIECE_SIZE][PIECE_SIZE];
+} SPiece;
+
+typedef struct
+{
+    TGameField field;
+    SPiece next;
 } SGameModel;
 
 #endif

@@ -19,43 +19,25 @@ int main()
     SGameModel model;
     resetGame(&model);
     prepareRandomNext(&model);
+    insertNext(&model, FIELD_WIDTH / 2 - 1 - model.next.localAxisX, 0);
 
     int counter = 0;
-    char hasPiece = FALSE;
-    char gameOver = FALSE;
+    char success;
     while (1)
     {
         int key = gfx_pollkey();
 
-        clearRows(&model);
-
-        if (!hasPiece && !gameOver)
+        if (key == SDLK_LEFT)
         {
-            char success = insertNext(&model, FIELD_WIDTH / 2 - 1 - model.nextLocalAxisX, 0);
-            if (!success)
-            {
-                collidePiece(&model);
-                gameOver = TRUE;
-                hasPiece = FALSE;
-            }
-            else
-            {
-                prepareRandomNext(&model);
-                hasPiece = TRUE;
-            }
+            attemptMoveCurrent(&model, LEFT);
         }
 
-        if (hasPiece && key == SDLK_LEFT)
+        else if (key == SDLK_RIGHT)
         {
-            moveCurrent(&model, LEFT);
+            attemptMoveCurrent(&model, RIGHT);
         }
 
-        else if (hasPiece && key == SDLK_RIGHT)
-        {
-            moveCurrent(&model, RIGHT);
-        }
-
-        else if (hasPiece && key == SDLK_DOWN)
+        else if (key == SDLK_DOWN)
         {
         }
 
@@ -66,7 +48,15 @@ int main()
 
         if (counter++ == 20)
         {
-            moveCurrent(&model, DOWN);
+            success = attemptMoveCurrent(&model, DOWN);
+            if (!success)
+            {
+                immobiliseCurrent(&model);
+                prepareRandomNext(&model);
+                success = insertNext(&model, FIELD_WIDTH / 2 - 1 - model.next.localAxisX, 0);
+                if (!success)
+                    break;
+            }
             counter = 0;
         }
 
