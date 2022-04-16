@@ -172,3 +172,9 @@ void clearRows(SGameModel *model)
         }
     }
 }
+
+char forwardPieces(SGameModel *model)
+{
+    prepareRandomNext(model);
+    return insertNext(model, FIELD_WIDTH / 2 - 1 - model->next.localAxisX, 0);
+}

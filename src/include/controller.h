@@ -28,4 +28,6 @@ char insertNext(SGameModel *model, int xoffset, int yoffset);
 
 void clearRows(SGameModel *model);
 
+char forwardPieces(SGameModel *model);
+
 #endif

@@ -18,50 +18,38 @@ int main()
 
     SGameModel model;
     resetGame(&model);
-    prepareRandomNext(&model);
-    insertNext(&model, FIELD_WIDTH / 2 - 1 - model.next.localAxisX, 0);
 
     int counter = 0;
-    char movePerfomed = TRUE;
+    char inserted = forwardPieces(&model);
     while (1)
     {
         int key = gfx_pollkey();
 
         if (key == SDLK_LEFT)
-        {
             attemptMoveCurrent(&model, LEFT);
-        }
 
         else if (key == SDLK_RIGHT)
-        {
             attemptMoveCurrent(&model, RIGHT);
-        }
 
         else if (key == SDLK_DOWN)
-        {
-            while ((movePerfomed = attemptMoveCurrent(&model, DOWN)) != FALSE)
+            while ((inserted = attemptMoveCurrent(&model, DOWN)) == TRUE)
                 ;
-        }
 
         if (key == SDLK_SPACE)
-        {
             attemptRotateCurrent(&model);
-        }
 
         if (counter++ == 20)
         {
-            if (movePerfomed)
-                clearRows(&model);
-            movePerfomed = attemptMoveCurrent(&model, DOWN);
+            clearRows(&model);
+            inserted = attemptMoveCurrent(&model, DOWN);
             counter = 0;
         }
 
-        if (!movePerfomed)
+        if (!inserted)
         {
             immobiliseCurrent(&model);
-            prepareRandomNext(&model);
-            movePerfomed = insertNext(&model, FIELD_WIDTH / 2 - 1 - model.next.localAxisX, 0);
-            if (!movePerfomed)
+            inserted = forwardPieces(&model);
+            if (!inserted)
                 break;
         }
 
