@@ -6,8 +6,14 @@
 /* --------------------------------------- */
 #define FIELD_WIDTH 10
 #define FIELD_HEIGHT 20
-#define BLOCK_DIMENSION 20
-#define BLOCK_SPACING 5
+#define BLOCK_DIMENSION 30
+#define BLOCK_SPACING 1
+
+#define PEG_HEIGHT (FIELD_HEIGHT * (BLOCK_DIMENSION + BLOCK_SPACING))
+#define SCREEN_CENTER_X (gfx_screenWidth() / 2.f)
+#define LEFT_PEG_LOC (SCREEN_CENTER_X - ((FIELD_WIDTH + 1) / 2 * (BLOCK_DIMENSION + BLOCK_SPACING)))
+#define RIGHT_PEG_LOC (SCREEN_CENTER_X + ((FIELD_WIDTH + 1) / 2 * (BLOCK_DIMENSION + BLOCK_SPACING)))
+
 #define FRAMERATE 60
 #define FRAMERATE_DELAY 1000 / FRAMERATE
 /*******************************************/

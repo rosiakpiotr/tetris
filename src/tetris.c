@@ -54,6 +54,7 @@ int main()
         }
 
         clearScreen();
+        drawGame(model);
         drawBoard(model);
         gfx_updateScreen();
         SDL_Delay(FRAMERATE_DELAY);

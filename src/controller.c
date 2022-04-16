@@ -5,6 +5,8 @@ void resetGame(SGameModel *model)
     for (size_t y = 0; y < FIELD_HEIGHT; y++)
         for (size_t x = 0; x < FIELD_WIDTH; x++)
             model->field[x][y] = EMPTY_BLOCK;
+
+    prepareRandomNext(model);
 }
 
 char attemptMoveCurrent(SGameModel *model, EDirection dir)
@@ -175,6 +177,7 @@ void clearRows(SGameModel *model)
 
 char forwardPieces(SGameModel *model)
 {
+    char success = insertNext(model, FIELD_WIDTH / 2 - 1 - model->next.localAxisX, 0);
     prepareRandomNext(model);
-    return insertNext(model, FIELD_WIDTH / 2 - 1 - model->next.localAxisX, 0);
+    return success;
 }
