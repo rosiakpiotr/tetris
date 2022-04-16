@@ -45,7 +45,7 @@ int main()
 
         if (key == SDLK_SPACE)
         {
-            rotatePiece(&model);
+            attemptRotateCurrent(&model);
         }
 
         if (counter++ == 20)

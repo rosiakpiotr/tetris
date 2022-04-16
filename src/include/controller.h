@@ -9,12 +9,14 @@
 #include "piece_definition.h"
 
 void resetGame(SGameModel *model);
-void rotatePiece(SGameModel *model);
-char attemptMoveCurrent(SGameModel *model, EDirection dir);
-char moveCurrent(SGameModel *model, EDirection dir);
 void findCurrentAxisInField(SGameModel *model, int *xIndex, int *yIndex);
-void eraseCurrentPieceStartingAt(SGameModel *model, int xIndex, int yIndex);
+void eraseCurrent(SGameModel *model);
 void immobiliseCurrent(SGameModel *model);
+
+char attemptMoveCurrent(SGameModel *model, EDirection dir);
+char attemptRotateCurrent(SGameModel *model);
+char attemptTransform(SGameModel *model, int moveBy, EDirection dir, int rotateTimes);
+char transformCurrent(SGameModel *model, int moveBy, EDirection dir, int rotateTimes);
 
 void prepareRandomNext(SGameModel *model);
 void prepareNext(SGameModel *model, int id, int rotation);

@@ -7,8 +7,56 @@ void resetGame(SGameModel *model)
             model->field[x][y] = EMPTY_BLOCK;
 }
 
-void rotatePiece(SGameModel *model)
+char attemptMoveCurrent(SGameModel *model, EDirection dir)
 {
+    return attemptTransform(model, 1, dir, 0);
+}
+
+char attemptRotateCurrent(SGameModel *model)
+{
+    return attemptTransform(model, 0, DOWN, 1);
+}
+
+char attemptTransform(SGameModel *model, int moveBy, EDirection dir, int rotateTimes)
+{
+    char success;
+    SPiece nextBackup;
+    TGameField fieldBackup;
+
+    // Backup field and next piece in case move fails
+    memcpy(&nextBackup, &model->next, sizeof(model->next));
+    memcpy(&fieldBackup, model->field, sizeof(model->field));
+
+    success = transformCurrent(model, moveBy, dir, rotateTimes);
+    // Restore last state of game field if move failed and always restore
+    // next piece that was there before doing movement.
+    if (!success)
+        memcpy(model->field, &fieldBackup, sizeof(fieldBackup));
+    memcpy(&model->next, &nextBackup, sizeof(nextBackup));
+
+    return success;
+}
+
+char transformCurrent(SGameModel *model, int moveBy, EDirection dir, int rotateTimes)
+{
+    int rotCentX;
+    int rotCentY;
+    int xoffset = moveBy * (dir == LEFT ? -1 : (dir == RIGHT ? 1 : 0));
+    int yoffset = moveBy * (dir == DOWN ? 1 : 0);
+
+    findCurrentAxisInField(
+        model,
+        &rotCentX,
+        &rotCentY);
+    prepareNext(
+        model,
+        (GET_PIECE_ID(model->field[rotCentX][rotCentY])),
+        (GET_ROTATION((model->field[rotCentX][rotCentY])) + rotateTimes) % ROTATION_COUNT);
+    eraseCurrent(model);
+    return insertNext(
+        model,
+        rotCentX - model->next.localAxisX + xoffset,
+        rotCentY - model->next.localAxisY + yoffset);
 }
 
 char insertNext(SGameModel *model, int xoffset, int yoffset)
@@ -49,62 +97,18 @@ void findCurrentAxisInField(SGameModel *model, int *xIndex, int *yIndex)
     }
 }
 
-void eraseCurrentPieceStartingAt(SGameModel *model, int xIndex, int yIndex)
+void eraseCurrent(SGameModel *model)
 {
-    for (size_t y = 0; y < PIECE_SIZE; y++)
+    for (size_t y = 0; y < FIELD_HEIGHT; y++)
     {
-        for (size_t x = 0; x < PIECE_SIZE; x++)
+        for (size_t x = 0; x < FIELD_WIDTH; x++)
         {
-            if (INDEXES_IN_RANGE(xIndex + x, yIndex + y) &&
-                IS_BMOVABLE(model->field[xIndex + x][yIndex + y]))
+            if (IS_BMOVABLE(model->field[x][y]))
             {
-                model->field[xIndex + x][yIndex + y] = EMPTY_BLOCK;
+                model->field[x][y] = EMPTY_BLOCK;
             }
         }
     }
-}
-
-char attemptMoveCurrent(SGameModel *model, EDirection dir)
-{
-    char success;
-    SPiece nextBackup;
-    TGameField fieldBackup;
-
-    // Backup field and next piece in case move fails
-    memcpy(&nextBackup, &model->next, sizeof(model->next));
-    memcpy(&fieldBackup, model->field, sizeof(model->field));
-
-    success = moveCurrent(model, dir);
-    if (!success)
-        memcpy(model->field, &fieldBackup, sizeof(fieldBackup));
-    memcpy(&model->next, &nextBackup, sizeof(nextBackup));
-
-    return success;
-}
-
-char moveCurrent(SGameModel *model, EDirection dir)
-{
-    int rotCentX;
-    int rotCentY;
-    int xoffset = dir == LEFT ? -1 : (dir == RIGHT ? 1 : 0);
-    int yoffset = dir == DOWN ? 1 : 0;
-
-    findCurrentAxisInField(
-        model,
-        &rotCentX,
-        &rotCentY);
-    prepareNext(
-        model,
-        GET_PIECE_ID(model->field[rotCentX][rotCentY]),
-        GET_ROTATION(model->field[rotCentX][rotCentY]));
-    eraseCurrentPieceStartingAt(
-        model,
-        rotCentX - model->next.localAxisX,
-        rotCentY - model->next.localAxisY);
-    return insertNext(
-        model,
-        rotCentX - model->next.localAxisX + xoffset,
-        rotCentY - model->next.localAxisY + yoffset);
 }
 
 void immobiliseCurrent(SGameModel *model)

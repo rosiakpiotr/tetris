@@ -38,9 +38,9 @@
 #define IS_BMOVABLE(BLOCK) (BLOCK & (1 << BMOVABLE))
 #define SET_MOVABLE(BLOCK) (BLOCK |= (1 << BMOVABLE))
 #define SET_INMOVABLE(BLOCK) (BLOCK &= ~(1 << BMOVABLE))
-#define GET_PIECE_ID(BLOCK) ((BLOCK >> PIECE_ID) & ((1 << 3) - 1))
+#define GET_PIECE_ID(BLOCK) (((BLOCK) >> PIECE_ID) & ((1 << 3) - 1))
 #define SET_PIECE_ID(BLOCK, ID) (BLOCK |= (((ID)&0x07) << PIECE_ID)) // 0x07 -> 0000 0111
-#define GET_ROTATION(BLOCK) ((BLOCK >> ROTATION) & ((1 << 2) - 1))
+#define GET_ROTATION(BLOCK) (((BLOCK) >> ROTATION) & ((1 << 2) - 1))
 #define SET_ROTATION(BLOCK, STAGE) (BLOCK |= (((STAGE)&0x03) << ROTATION)) // 0x03 -> 0000 0011
 #define IS_ROT_AXIS(BLOCK) (BLOCK & (1 << IS_RAXIS))
 #define SET_IS_AXIS(BLOCK) (BLOCK |= (1 << IS_RAXIS))
