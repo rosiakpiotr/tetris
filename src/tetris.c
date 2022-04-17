@@ -21,7 +21,7 @@ int main()
 
     int counter = 0;
     char inserted = forwardPieces(&model);
-    EGameState state;
+    EGameState state = GOING;
     while (1)
     {
         int key = gfx_pollkey();
@@ -42,8 +42,8 @@ int main()
 
             if (counter++ == MOVE_DOWN_EVERY_N_FRAMES)
             {
-                clearRows(&model);
                 inserted = attemptMoveCurrent(&model, DOWN);
+                clearRows(&model);
                 counter = 0;
             }
 
